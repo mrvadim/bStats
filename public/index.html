@@ -22,7 +22,7 @@
             <option value="">Выберите</option>
             <option v-for="(c, idx) in currencies" :key="idx" :value="c">{{c}}</option>
         </select>
-        <button :disabled="!currency.length" @click="loadGraph" class="control__button">loadGraph</button>
+        <button :disabled="!currency.length" @click="handleRequest" class="control__button">Refresh</button>
         <h3>{{currency}}</h3>
         <p>points: {{yAxis.length}}</p>
     </div>
@@ -84,7 +84,12 @@
             }
 
             function handleRequest() {
-                fetchData(url+currency.value).then(res => data.value = res);
+                fetchData(url+currency.value)
+                    .then(res => data.value = res)
+                    .then(()=>{
+                        loadGraph()
+                    });
+
             }
 
             onMounted(() => {
