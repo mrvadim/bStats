@@ -1,0 +1,11 @@
+{
+  "name": "binance",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@binance/connector": "^1.8.1",
+    "express": "^4.17.3",
+    "influx": "^5.9.3"
+  }
+}

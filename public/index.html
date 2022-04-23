@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Vue 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js",
+          "apexcharts": "https://unpkg.com/apexcharts@3.35.0/dist/apexcharts.esm.js"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div id="app">
+    <div class="control">
+        <select v-model="currency" id="currency-select" class="control__select" @change="handleRequest">
+            <option value="">Выберите</option>
+            <option v-for="(c, idx) in currencies" :key="idx" :value="c">{{c}}</option>
+        </select>
+        <button :disabled="!currency.length" @click="loadGraph" class="control__button">loadGraph</button>
+        <h3>{{currency}}</h3>
+        <p>points: {{yAxis.length}}</p>
+    </div>
+
+    <div class="graph" ref="graph"></div>
+</div>
+
+<script type="module">
+    import {createApp, ref, onMounted, computed} from 'vue';
+    import apexcharts from 'apexcharts';
+
+    createApp({
+        setup() {
+            const url = 'http://127.0.0.1:4000/api/';
+            const currencies = ['BNBUSDT', 'BNBBTC', 'BTCEUR', 'AXSBUSD', 'BUSDUSDT'];
+            const data = ref([]);
+            const graph = ref(null);
+            const currency = ref("");
+            let graphDraw = null;
+            const timeOffset = 3*60*60*1000;
+            const yAxis = computed(() => {
+                return data.value.map(el => {
+                    return [Date.parse(el.time) + timeOffset, el.price]
+                })
+            })
+
+            const options = {
+                chart: {
+                    type: "area",
+                    animations: {
+                        enabled: false
+                    }
+                },
+                stroke: {
+                    curve: 'straight',
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                series: [],
+                noData: {
+                    text: 'Empty'
+                },
+                xaxis: {
+                    type: 'datetime'
+                }
+            }
+
+            async function fetchData(url) {
+                const response = await fetch(url)
+                return response.json()
+            }
+
+            function loadGraph() {
+                graphDraw.updateSeries([{
+                    name: currency.value,
+                    data: yAxis.value
+                }])
+            }
+
+            function handleRequest() {
+                fetchData(url+currency.value).then(res => data.value = res);
+            }
+
+            onMounted(() => {
+                graphDraw = new apexcharts(graph.value, options);
+                graphDraw.render()
+            })
+
+            return {
+                graph,
+                data,
+                loadGraph,
+                yAxis,
+                currency,
+                currencies,
+                handleRequest
+            }
+        }
+    }).mount('#app')
+
+</script>
+</body>
+</html>

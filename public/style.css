@@ -1,0 +1,28 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+.graph {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem;
+    border: 1px solid lightskyblue;
+}
+.control {
+    display: flex;
+    align-items: center;
+    height: 3rem;
+    background-color: lightskyblue;
+    gap: 1rem;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.control__select {
+    height: 2rem;
+}
+
+.control__button {
+    height: 2rem;
+    padding: 0 1rem;
+}
